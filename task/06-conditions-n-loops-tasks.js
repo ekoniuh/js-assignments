@@ -292,7 +292,8 @@ function isCreditCardNumber(ccn) {
         isEvenTurn = !isEvenTurn;
     }
 
-    return !(sum % 10);}
+    return !(sum % 10);
+}
 
 
 /**
@@ -342,35 +343,54 @@ function getDigitalRoot(num) {
  *   '{[(<{[]}>)]}' = true 
  */
 function isBracketsBalanced(str) {
-    const brackets = new Map([
+    const brackets= [
         ['[', ']'], ['(', ')'], ['{', '}'], ['<', '>']
-    ]);
+    ];
 
-    function has(iterator, element) {
-        let current = iterator.next().value;
-        while (current !== undefined) {
-            if (current === element) {
-                return true;
+    function check(str, brackets) {
+        let strLength = str.length;
+        let brackLength = brackets.length;
+        let newStr = [];
+        newStr = str.split('');
+      
+        while (strLength > 1) {
+          for (let i = 0; i < newStr.length; i++) {
+            for (let j = 0; j < brackLength; j++) {
+              if (newStr[i] == brackets[j][0] && newStr[i+1] == brackets[j][1]) {
+                newStr.splice(i, 2);
+              }
             }
-            current = iterator.next().value;
+          }
+          strLength -= 2;
+          if (newStr.length == 0) return true;
         }
-
         return false;
-    };
+      }
+    // function has(iterator, element) {
+    //     let current = iterator.next().value;
+    //     while (current !== undefined) {
+    //         if (current === element) {
+    //             return true;
+    //         }
+    //         current = iterator.next().value;
+    //     }
 
-    let stack = [];
-    for (let char of str) {
-        if (has(brackets.keys(), char)) {
-            stack.push(char);
-        } else if (has(brackets.values(), char)) {
-            let removed = stack.pop();
-            if (removed === undefined || brackets.get(remoDved) !== char) {
-                return false;
-            }
-        }
-    }
+    //     return false;
+    // };
 
-    return stack.pop() === undefined;
+    // let stack = [];
+    // for (let char of str) {
+    //     if (has(brackets.keys(), char)) {
+    //         stack.push(char);
+    //     } else if (has(brackets.values(), char)) {
+    //         let removed = stack.pop();
+    //         if (removed === undefined || brackets.get(remoDved) !== char) {
+    //             return false;
+    //         }
+    //     }
+    // }
+
+    // return stack.pop() === undefined;
 }
 
 
@@ -406,7 +426,50 @@ function isBracketsBalanced(str) {
  *
  */
 function timespanToHumanString(startDate, endDate) {
-    throw new Error('Not implemented');
+    const msToSecs = (ms) => ms / 1000;
+    const msToMins = (ms) => ms / (1000 * 60);
+    const msToHours = (ms) => ms / (1000 * 60 * 60);
+    const msToDays = (ms) => ms / (1000 * 60 * 60 * 24);
+    const msToMonths = (ms) => ms / (1000 * 60 * 60 * 24 * 30);
+    const msToYears = (ms) => ms / (1000 * 60 * 60 * 24 * 30 * 12);
+
+    const altRound = (val) => Math.abs(Math.round(val) - val) == 0.5 ? Math.floor(val) : Math.round(val);
+
+    const period = endDate.getTime() - startDate.getTime();
+    switch (true) {
+        case (msToSecs(period) <= 45):
+            return 'a few seconds ago';
+            break;
+        case (msToSecs(period) <= 90):
+            return 'a minute ago';
+            break;
+        case (msToMins(period) <= 45):
+            return `${altRound(msToMins(period))} minutes ago`;
+            break;
+        case (msToMins(period) <= 90):
+            return 'an hour ago';
+            break;
+        case (msToHours(period) <= 22):
+            return `${altRound(msToHours(period))} hours ago`;
+            break;
+        case (msToHours(period) <= 36):
+            return 'a day ago';
+            break;
+        case (msToDays(period) <= 25):
+            return `${altRound(msToDays(period))} days ago`;
+            break;
+        case (msToDays(period) <= 45):
+            return 'a month ago';
+            break;
+        case (msToDays(period) <= 345):
+            return `${altRound(msToMonths(period))} months ago`;
+            break;
+        case (msToDays(period) <= 545):
+            return 'a year ago';
+            break;
+        default:
+            return `${altRound(msToYears(period))} years ago`;
+    }
 }
 
 
@@ -447,7 +510,19 @@ function toNaryString(num, n) {
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
 function getCommonDirectoryPath(pathes) {
-    throw new Error('Not implemented');
+    pathes.sort();
+
+    let lastDirDelimiter = -1;
+    for (let lastEqual = 0; lastEqual < pathes[0].length; lastEqual++) {
+        if (pathes[0][lastEqual] != pathes[pathes.length - 1][lastEqual]) {
+            break;
+        }
+        if (pathes[0][lastEqual] == '/') {
+            lastDirDelimiter = lastEqual;
+        }
+    }
+
+    return lastDirDelimiter == -1 ? '' : pathes[0].slice(0, lastDirDelimiter + 1);
 }
 
 
@@ -470,7 +545,13 @@ function getCommonDirectoryPath(pathes) {
  *
  */
 function getMatrixProduct(m1, m2) {
-    throw new Error('Not implemented');
+    let product = new Array(m1.length).fill(0).map(row => new Array(m2[0].length).fill(0));
+
+    return product.map((row, i) =>
+        row.map((elem, j) =>
+            m1[i].reduce((acc, val, k) => acc + val * m2[k][j], 0)
+        )
+    );
 }
 
 

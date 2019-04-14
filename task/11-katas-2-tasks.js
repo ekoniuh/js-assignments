@@ -63,7 +63,28 @@ function parseBankAccount(bankAccount) {
  *                                                                                                'characters.'
  */
 function* wrapText(text, columns) {
-    throw new Error('Not implemented');
+    if (columns >= text.length) {
+        yield text;
+        text = '';
+    }
+
+    while (text.length) {
+        const column = text.slice(0, columns + 1);
+        const spaceIndex = column.lastIndexOf(' ');
+        if (spaceIndex == -1) {
+            const firstSpaceIndex = text.indexOf(' ');
+            if (firstSpaceIndex == -1) {
+                yield text;
+                text = '';
+            } else {
+                yield text.slice(0, firstSpaceIndex);
+                text = text.slice(firstSpaceIndex + 1);
+            }
+        } else {
+            yield text.slice(0, spaceIndex);
+            text = text.slice(spaceIndex + 1);
+        }
+    }
 }
 
 
